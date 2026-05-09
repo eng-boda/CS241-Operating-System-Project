@@ -97,6 +97,28 @@ Testing the simulator's logic and data integrity layer.
 
 ---
 
+## 🧠 Required Analysis Questions
+
+### 1. Which algorithm gave better average waiting time?
+SRTF (Shortest Remaining Time First) typically produces a lower average waiting time. By prioritizing processes with the shortest remaining burst, it clears tasks from the system faster, thereby reducing the total time other processes spend waiting in the queue.
+
+### 2. Which algorithm gave better response time?
+Round Robin (RR) generally provides better (lower) average response time. Its time-slicing mechanism ensures that every process receives a portion of the CPU shortly after arrival, which is critical for interactive systems.
+
+### 3. Did Round Robin appear fairer across all processes?
+Yes, Round Robin is considered fairer because it allocates CPU time equally through a fixed time quantum. This prevents 'starvation,' where long processes are indefinitely delayed by shorter ones, a risk inherent in SRTF.
+
+### 4. Did SRTF complete short jobs faster?
+Yes, SRTF is designed specifically to optimize the completion of short jobs. By preempting longer processes whenever a shorter job arrives, it ensures that minimal burst time tasks exit the system as quickly as possible.
+
+### 5. How did the selected quantum affect the Round Robin results?
+The time quantum is the primary performance driver for RR. A small quantum improves responsiveness but increases overhead due to context switching. A large quantum reduces overhead but can make the system feel sluggish, eventually behaving like FCFS.
+
+### 6. Which algorithm would you recommend for the tested workload, and why?
+If the workload consists of time-sensitive interactive tasks, Round Robin is recommended for its fairness and response time. If the goal is high throughput and efficiency for a batch of mixed tasks, SRTF is the superior choice for minimizing average wait times.
+
+---
+
 ## 🛡️ Robust Validation Layer
 The simulator is built with data integrity in mind. It includes a validation layer that detects:
 * Invalid (negative) arrival times.
