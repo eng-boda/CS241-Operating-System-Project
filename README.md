@@ -56,7 +56,3 @@ The simulator is built with data integrity in mind. It includes a validation lay
 ## 🧠 Final Verdict
 * **Choose Round Robin** if you are building an **Interactive System** where fairness and quick response times for all users are vital.
 * **Choose SRTF** for **Batch Processing** or high-throughput environments where minimizing the total wait time is the ultimate goal.
-
----
-**Developed by:** Abdelrahman Ahmed (Boda) 💻
-*// Welcome to Boda's world*
