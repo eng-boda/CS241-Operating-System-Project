@@ -14,14 +14,56 @@ This simulator focuses on the critical balance between **Fairness** and **Effici
 
 ---
 
-## 📊 Fairness vs. Efficiency: The Comparison
+## 📊 Required Comparison Focus
+
+### 1. Fairness versus efficiency.
 
 | Feature | Round Robin (RR) | SRTF |
 | :--- | :--- | :--- |
-| **Goal** | Fair sharing of CPU. | Minimize average waiting time. |
-| **Starvation** | **No starvation;** all processes get CPU time regularly. | **Risk of starvation** for long processes. |
-| **Efficiency** | Performance depends on quantum size (q). | Mathematically best for minimizing waiting/turnaround time. |
-| **Response Time** | Guaranteed response within one time quantum. | Short jobs respond fast; long jobs may wait significantly. |
+| **Fairness** | 1. Short processes are always favored. <br>
+2. Long processes may suffer from starvation (they keep getting preempted if shorter jobs keep arriving). <br> 
+3. A process might wait indefinitely if shorter jobs keep coming.
+ | 1. Every process gets a fixed time slice (quantum q). <br> 
+2. No starvation → all processes get CPU time regularly. <br>
+3. Ensures equal opportunity for all processes. |
+| **Efficiency** | 1. Minimizes average waiting time and turnaround time. <br>
+2. Always runs the process with the least remaining time → best performance mathematically. <br>
+3. Overhead due to frequent preemption when new processes arrive.
+ | 1.	Performance depends heavily on time quantum (q): <br> 
+o	Large q → behaves like **FCFS** (Weak Interactivity and  Low Overhead) <br> 
+o	Small q → behaves like **RR** (Fast Responsive and High Overhead) <br>
+2.	 Higher context switching overhead than SRTF. <br>
+3.	Does not minimize waiting time. |
+
+### 2. Effect of time slicing versus shortest-job preference
+
+| Feature | Round Robin (RR) | SRTF |
+| :--- | :--- | :--- |
+| **CPU Allocation** | Divides CPU time into fixed time slices (quantum q). | Always selects the process with the smallest remaining time. |
+| **Treatment of short or long jobs** | Ignores how short or long a job is → even very short jobs may wait for their turn. | 1.Short jobs finish very quickly. <br>
+2.Short jobs finish very quickly. |
+| **Goal** | Fair sharing of CPU | Minimize average waiting time |
+| **Effect** | CPU time is shared evenly, but not optimized for job length. | CPU time is optimized for shortest jobs, not evenly shared. |
+
+### 3. Effect on first response time
+
+| Feature | Round Robin (RR) | SRTF |
+| :--- | :--- | :--- |
+| **Effect on first response time** | Each process is guaranteed to receive CPU time within one time quantum, ensuring that no process waits too long before its first execution. | Prioritizes shorter processes, which means that short jobs can get an immediate response, but longer processes may experience significant delays before their first execution. |
+
+### 4. Effect of quantum size on Round Robin behavior
+
+| Feature | Small quantum(q) | Large quantum(q) |
+| :--- | :--- | :--- |
+| **Effect** | Fair and highly responsive but causes high overhead due to frequent context switching. | Efficient with low overhead but less responsive and behaves like FCFS. |
+
+### 5.Whether SRTF gives a strong advantage to short jobs
+
+| Feature | SRTF |
+| :--- | :--- |
+| **Waiting Time** | Very low for short processes |
+| **Execution Behavior** | Short jobs are executed immediately |
+| **Fairness** | Low (biased toward short jobs) |
 
 ---
 
