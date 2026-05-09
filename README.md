@@ -28,7 +28,7 @@ This simulator focuses on the critical balance between **Fairness** and **Effici
 | Feature | Round Robin (RR) | Shortest Remaining Time First (SRTF) |
 | :--- | :--- | :--- |
 | **CPU Allocation** | Divides CPU time into fixed time slices (quantum q). | Always selects the process with the smallest remaining time. |
-| **Treatment of Jobs** | Ignores how short or long a job is → even very short jobs may wait for their turn. | Short jobs finish very quickly. |
+| **Treatment of short or long jobs** | Ignores how short or long a job is → even very short jobs may wait for their turn. | 1.Short jobs finish very quickly. <br>2.Long jobs May be delayed/starved. |
 | **Goal** | Fair sharing of CPU. | Minimize average waiting time. |
 | **Overall Effect** | CPU time is shared evenly, but not optimized for job length. | CPU time is optimized for shortest jobs, not shared evenly. |
 
