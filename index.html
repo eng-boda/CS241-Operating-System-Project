@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Scheduling Simulator | Custom OOP Logic</title>
+    <style>
+        :root {
+            --primary: #4F46E5; --primary-hover: #4338CA;
+            --bg-color: #f8fafc; --card-bg: #ffffff;
+            --text-main: #0f172a; --text-muted: #64748b;
+            --border-color: #cbd5e1; --error-color: #ef4444; --success-color: #10b981;
+            --queue-bg: #f1f5f9;
+            --p1: #fca5a5; --p2: #fcd34d; --p3: #86efac; --p4: #93c5fd;
+            --p5: #c4b5fd; --p6: #f9a8d4; --p7: #fdba74; --p8: #5eead4;
+        }
+
+        body.dark-mode {
+            --bg-color: #0f172a; --card-bg: #1e293b;
+            --text-main: #f8fafc; --text-muted: #94a3b8;
+            --border-color: #334155; --queue-bg: #1e1e2f;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 2rem; transition: background 0.3s; }
+        .container { max-width: 1200px; margin: auto; display: flex; flex-direction: column; gap: 1.5rem; }
+        
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 1rem; }
+        .card { background: var(--card-bg); padding: 1.5rem; border-radius: 10px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid var(--border-color); }
+        .card h2 { margin-bottom: 1rem; color: var(--primary); font-size: 1.3rem; border-bottom: 1px dashed var(--border-color); padding-bottom: 0.5rem; }
+        
+        button { background: var(--primary); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        button:hover { background: var(--primary-hover); }
+        button.secondary { background: var(--border-color); color: var(--text-main); }
+        button.danger { background: var(--error-color); color: white;}
+        
+        .scenarios-group { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+        
+        table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
+        th, td { padding: 0.75rem; text-align: center; border-bottom: 1px solid var(--border-color); }
+        input[type="number"] { width: 70px; padding: 0.4rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); text-align: center;}
+        
+        .controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; background: rgba(0,0,0,0.02); padding: 1rem; border-radius: 8px;}
+        .quantum-group { display: flex; align-items: center; gap: 0.5rem; font-weight: bold; }
+        
+        #error-msg { color: var(--error-color); font-weight: bold; margin-top: 1rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px; display: none; border-left: 4px solid var(--error-color); }
+
+        .gantt-chart { display: flex; height: 50px; border: 1px solid var(--border-color); border-radius: 6px; position: relative; margin-bottom: 2rem; overflow: hidden; background: var(--bg-color);}
+        .gantt-block { display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; border-right: 1px solid rgba(0,0,0,0.1); position: relative; color: #000; }
+        .gantt-time { position: absolute; bottom: -22px; right: -5px; font-size: 0.75rem; color: var(--text-muted); }
+
+        .queue-timeline { display: flex; gap: 2px; margin-bottom: 2rem;}
+        .queue-snapshot { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; background: var(--queue-bg); padding: 4px; border-radius: 4px; border: 1px dashed var(--border-color); }
+        .queue-item { padding: 2px 0; border-radius: 3px; font-size: 0.7rem; font-weight: bold; text-align: center; border: 1px solid rgba(0,0,0,0.1); color: #000;}
+
+        .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        
+        .color-0 { background-color: var(--p1); } .color-1 { background-color: var(--p2); }
+        .color-2 { background-color: var(--p3); } .color-3 { background-color: var(--p4); }
+        .color-4 { background-color: var(--p5); } .color-5 { background-color: var(--p6); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>CPU Scheduling Simulator (OOP Core)</h1>
+        <button class="secondary" onclick="document.body.classList.toggle('dark-mode')">Toggle Dark Mode</button>
+    </header>
+
+    <div class="card" id="input-panel">
+        <h2>1. Input Panel (Process Data)</h2>
+        <div class="scenarios-group">
+            <button class="secondary" onclick="loadScenario('A')">Scenario A (Mixed)</button>
+            <button class="secondary" onclick="loadScenario('B')">Scenario B (Quantum Sensitivity)</button>
+            <button class="secondary" onclick="loadScenario('C')">Scenario C (Short-Job Heavy)</button>
+            <button class="secondary" onclick="loadScenario('D')">Scenario D (Fairness / First Response)</button>
+            <button class="danger" onclick="loadScenario('E')">Scenario E (Invalid Check)</button>
+        </div>
+        
+        <table>
+            <thead><tr><th>Process ID</th><th>Arrival Time</th><th>Burst Time</th><th>Action</th></tr></thead>
+            <tbody id="proc-body"></tbody>
+        </table>
+        
+        <div class="controls">
+            <button class="secondary" onclick="addProc()">+ Add Process</button>
+            <div class="quantum-group">
+                <label>Time Quantum (RR):</label>
+                <input type="number" id="quantum" value="3">
+            </div>
+            <button onclick="runSimulation()" style="background: var(--success-color)">Run Simulation</button>
+        </div>
+        <div id="error-msg"></div>
+    </div>
+
+    <div id="simulation-wrapper" style="display: none; display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="card">
+            <h2>2. Gantt Charts & Ready Queue</h2>
+            <h4 style="margin-bottom: 10px;">Round Robin (RR) - Gantt Chart</h4>
+            <div id="gantt-rr" class="gantt-chart"></div>
+            <h4 style="margin-bottom: 10px; color: var(--primary);">Ready Queue View for Round Robin</h4>
+            <div id="queue-timeline-rr" class="queue-timeline"></div>
+            <h4 style="margin-bottom: 10px; margin-top: 1rem;">Shortest Remaining Time First (SRTF) - Gantt Chart</h4>
+            <div id="gantt-srtf" class="gantt-chart"></div>
+        </div>
+
+        <div class="card">
+            <h2>3. Results Tables</h2>
+            <div class="results-grid">
+                <div>
+                    <h4>Round Robin Metrics</h4>
+                    <table id="res-rr"><thead><tr><th>PID</th><th>WT</th><th>TAT</th><th>RT</th><th>Times in Queue</th></tr></thead><tbody></tbody></table>
+                </div>
+                <div>
+                    <h4>SRTF Metrics</h4>
+                    <table id="res-srtf"><thead><tr><th>PID</th><th>WT</th><th>TAT</th><th>RT</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>4. Comparison Summary</h2>
+            <p style="color:var(--text-muted); margin-bottom:1rem; font-size:0.9rem;">Side-by-side winner per metric. Lower value wins.</p>
+            <table id="comparison-table">
+                <thead><tr><th>Metric</th><th>Round Robin (avg)</th><th>SRTF (avg)</th><th>Winner</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="card">
+            <h2>5. Final Conclusion</h2>
+            <div id="conclusion-text" style="line-height:1.9; font-size:0.95rem; display:flex; flex-direction:column; gap:0.75rem;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+class Process {
+    constructor(processId, arrivalTime, burstTime, color) {
+        this.processId = processId;
+        this.arrivalTime = arrivalTime;
+        this.burstTime = burstTime;
+        this.remainingTime = burstTime;
+        this.priority = 0; 
+        this.waitingTime = 0;
+        this.turnaroundTime = 0;
+        this.responseTime = -1;
+        this.executionSlices = [];
+        this.queueEntries = 0; 
+        this.color = color;
+    }
+    timesEnteredQueue() { return this.executionSlices.length; }
+    isFinished() { return this.remainingTime === 0; }
+}
+
+class ReadyQueue {
+    constructor(processList, timeQuantum) {
+        this.processList = processList;
+        this.timeQuantum = timeQuantum;
+        this.firstExecution = new Array(processList.length).fill(false);
+        this.snapshots = [];
+    }
+
+    simulate() {
+        let currentTime = 0;
+        let completedCount = 0;
+        const totalProcesses = this.processList.length;
+        const addedToQueue = new Array(totalProcesses).fill(false);
+        const readyQueue = [];
+
+        this.processList.sort((a, b) => a.arrivalTime - b.arrivalTime);
+
+        for (let i = 0; i < totalProcesses; i++) {
+            if (this.processList[i].arrivalTime === 0) {
+                readyQueue.push(i);
+                addedToQueue[i] = true;
+                this.processList[i].queueEntries++;
+            }
+        }
+
+        while (completedCount < totalProcesses) {
+            if (readyQueue.length === 0) {
+                let nextArrival = Infinity;
+                for (let i = 0; i < totalProcesses; i++) {
+                    if (!addedToQueue[i]) nextArrival = Math.min(nextArrival, this.processList[i].arrivalTime);
+                }
+                currentTime = nextArrival;
+                for (let i = 0; i < totalProcesses; i++) {
+                    if (!addedToQueue[i] && this.processList[i].arrivalTime <= currentTime) {
+                        readyQueue.push(i); addedToQueue[i] = true; this.processList[i].queueEntries++;
+                    }
+                }
+                continue;
+            }
+
+            const index = readyQueue.shift();
+            const current = this.processList[index];
+
+            if (!this.firstExecution[index]) {
+                current.responseTime = currentTime - current.arrivalTime;
+                this.firstExecution[index] = true;
+            }
+
+            const sliceStart = currentTime;
+            const executionTime = Math.min(this.timeQuantum, current.remainingTime);
+            
+            let qState = readyQueue.map(idx => ({ id: this.processList[idx].processId, color: this.processList[idx].color }));
+
+            currentTime += executionTime;
+            current.remainingTime -= executionTime;
+            current.executionSlices.push([sliceStart, currentTime]);
+            
+            this.snapshots.push({ start: sliceStart, end: currentTime, queueState: qState });
+
+            for (let i = 0; i < totalProcesses; i++) {
+                if (!addedToQueue[i] && this.processList[i].arrivalTime <= currentTime) {
+                    readyQueue.push(i); addedToQueue[i] = true; this.processList[i].queueEntries++;
+                }
+            }
+
+            if (current.isFinished()) {
+                completedCount++;
+                current.turnaroundTime = currentTime - current.arrivalTime;
+                current.waitingTime = current.turnaroundTime - current.burstTime;
+            } else {
+                readyQueue.push(index); current.queueEntries++;
+            }
+        }
+    }
+}
+
+class SRTF {
+    constructor(processList) {
+        this.processList = processList;
+    }
+
+    simulate() {
+        let currentTime = 0;
+        let completedProcess = 0;
+        let n = this.processList.length;
+        let isStarted = new Array(n).fill(false);
+        let lastProcess = null;
+
+        this.processList.forEach(p => { p.remainingTime = p.burstTime; p.executionSlices = []; });
+
+        while (completedProcess < n) {
+            let current = null;
+            let minRemaining = Number.MAX_VALUE;
+
+            for (let p of this.processList) {
+                if (p.arrivalTime <= currentTime && !p.isFinished()) {
+                    if (p.remainingTime < minRemaining) {
+                        minRemaining = p.remainingTime; current = p;
+                    }
+                }
+            }
+
+            if (current === null) {
+                currentTime++; lastProcess = null; continue;
+            }
+
+            let currentIndex = this.processList.indexOf(current);
+            if (!isStarted[currentIndex]) {
+                current.responseTime = currentTime - current.arrivalTime;
+                isStarted[currentIndex] = true;
+            }
+
+            if (lastProcess !== null && lastProcess.processId === current.processId) {
+                let lastSlice = current.executionSlices[current.executionSlices.length - 1];
+                lastSlice[1] = currentTime + 1;
+            } else {
+                current.executionSlices.push([currentTime, currentTime + 1]);
+            }
+
+            current.remainingTime--;
+            currentTime++;
+            lastProcess = current;
+
+            if (current.isFinished()) {
+                completedProcess++;
+                current.turnaroundTime = currentTime - current.arrivalTime;
+                current.waitingTime = current.turnaroundTime - current.burstTime;
+                lastProcess = null;
+            }
+        }
+    }
+}
+
+let pCount = 0;
+function addProc(at=0, bt=5) {
+    pCount++;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>P${pCount}</td>
+        <td><input type="number" class="at" value="${at}"></td>
+        <td><input type="number" class="bt" value="${bt}"></td>
+        <td><button class="danger" onclick="this.parentElement.parentElement.remove()">X</button></td>`;
+    document.getElementById('proc-body').appendChild(tr);
+}
+
+function loadScenario(type) {
+    document.getElementById('proc-body').innerHTML = ''; pCount = 0;
+    if(type === 'A') { [ [0,8],[1,4],[2,9],[3,5] ].forEach(p => addProc(p[0],p[1])); document.getElementById('quantum').value=3; }
+    else if(type === 'B') { [ [0,6],[0,6],[0,6],[0,6] ].forEach(p => addProc(p[0],p[1])); document.getElementById('quantum').value=2; }
+    else if(type === 'C') { [ [0,10],[1,1],[2,2],[3,1] ].forEach(p => addProc(p[0],p[1])); document.getElementById('quantum').value=4; }
+    else if(type === 'D') { [ [0,8],[0,4],[0,6],[0,2] ].forEach(p => addProc(p[0],p[1])); document.getElementById('quantum').value=2; }
+    else if(type === 'E') { [ [0,5],[-2,4] ].forEach(p => addProc(p[0],p[1])); document.getElementById('quantum').value=0; }
+}
+
+function runSimulation() {
+    const errorEl = document.getElementById('error-msg');
+    errorEl.style.display = 'none';
+    
+    let rawProcs = Array.from(document.querySelectorAll('#proc-body tr')).map((tr, i) => {
+        return {
+            id: tr.cells[0].innerText,
+            at: parseInt(tr.querySelector('.at').value),
+            bt: parseInt(tr.querySelector('.bt').value),
+            color: `color-${i%6}`
+        };
+    });
+    
+    const q = parseInt(document.getElementById('quantum').value);
+
+    if(isNaN(q) || q <= 0) { errorEl.innerText = "Error: Invalid Quantum."; errorEl.style.display = 'block'; return; }
+    if(rawProcs.length === 0 || rawProcs.some(p => isNaN(p.at) || p.at < 0 || isNaN(p.bt) || p.bt <= 0)) {
+        errorEl.innerText = "Error: Invalid Process Data."; errorEl.style.display = 'block'; return;
+    }
+
+    let rrProcessList = rawProcs.map(p => new Process(p.id, p.at, p.bt, p.color));
+    let srtfProcessList = rawProcs.map(p => new Process(p.id, p.at, p.bt, p.color));
+
+    let rr = new ReadyQueue(rrProcessList, q);
+    rr.simulate();
+    
+    let srtf = new SRTF(srtfProcessList);
+    srtf.simulate();
+
+    document.getElementById('simulation-wrapper').style.display = 'flex';
+
+    const rrGantt = extractGanttData(rrProcessList);
+    const srtfGantt = extractGanttData(srtfProcessList);
+    const totalTime = Math.max(...rrGantt.map(g => g.end), ...srtfGantt.map(g => g.end));
+
+    renderGantt('gantt-rr', rrGantt, totalTime);
+    renderQueue('queue-timeline-rr', rr.snapshots, totalTime);
+    renderGantt('gantt-srtf', srtfGantt, totalTime);
+    
+    fillTable('res-rr', rrProcessList, true);
+    fillTable('res-srtf', srtfProcessList, false);
+    renderComparison(rrProcessList, srtfProcessList);
+    renderConclusion(rrProcessList, srtfProcessList, q);
+}
+
+function extractGanttData(processList) {
+    let data = [];
+    processList.forEach(p => {
+        p.executionSlices.forEach(slice => {
+            data.push({ id: p.processId, color: p.color, start: slice[0], end: slice[1] });
+        });
+    });
+    return data.sort((a,b) => a.start - b.start);
+}
+
+function renderGantt(id, gantt, total) {
+    const el = document.getElementById(id); el.innerHTML = '<div style="position:absolute; bottom:-22px; left:0; font-size:0.75rem; color:var(--text-muted);">0</div>';
+    gantt.forEach(b => {
+        const div = document.createElement('div');
+        div.className = `gantt-block ${b.color}`;
+        div.style.width = `${((b.end - b.start)/total)*100}%`;
+        div.innerHTML = `${b.id} <span class="gantt-time">${b.end}</span>`;
+        el.appendChild(div);
+    });
+}
+
+function renderQueue(id, snapshots, total) {
+    const el = document.getElementById(id); el.innerHTML = '';
+    snapshots.forEach(snap => {
+        const div = document.createElement('div');
+        div.className = 'queue-snapshot';
+        div.style.width = `${((snap.end - snap.start)/total)*100}%`;
+        if(snap.queueState && snap.queueState.length > 0) {
+            snap.queueState.forEach(qp => {
+                const item = document.createElement('div'); item.className = `queue-item ${qp.color}`; item.innerText = qp.id;
+                div.appendChild(item);
+            });
+        } else { div.innerHTML = '<span style="font-size:0.6rem; color:#94a3b8; text-align:center;">Empty</span>'; }
+        el.appendChild(div);
+    });
+}
+
+function fillTable(id, processList, isRR = false) {
+    const body = document.querySelector(`#${id} tbody`); body.innerHTML = '';
+    let avg = { wt:0, tat:0, rt:0 };
+    processList.sort((a,b) => a.processId.localeCompare(b.processId)).forEach(p => {
+        avg.wt+=p.waitingTime; avg.tat+=p.turnaroundTime; avg.rt+=p.responseTime;
+        const tiq = isRR ? `<td>${p.timesEnteredQueue()}</td>` : '';
+        body.innerHTML += `<tr><td>${p.processId}</td><td>${p.waitingTime}</td><td>${p.turnaroundTime}</td><td>${p.responseTime}</td>${tiq}</tr>`;
+    });
+    const n = processList.length;
+    const tiqAvg = isRR ? `<td>—</td>` : '';
+    body.innerHTML += `<tr style="font-weight:bold; background:rgba(0,0,0,0.03);"><td>Averages</td><td>${(avg.wt/n).toFixed(2)}</td><td>${(avg.tat/n).toFixed(2)}</td><td>${(avg.rt/n).toFixed(2)}</td>${tiqAvg}</tr>`;
+}
+
+function calcAvgs(list) {
+    const n = list.length;
+    return {
+        wt:  list.reduce((s,p) => s+p.waitingTime,    0) / n,
+        tat: list.reduce((s,p) => s+p.turnaroundTime, 0) / n,
+        rt:  list.reduce((s,p) => s+p.responseTime,   0) / n,
+    };
+}
+
+function renderComparison(rrList, srtfList) {
+    const rr   = calcAvgs(rrList);
+    const srtf = calcAvgs(srtfList);
+    const body = document.querySelector('#comparison-table tbody');
+    body.innerHTML = '';
+
+    const metrics = [
+        { label: 'Avg Waiting Time (WT)',     rrVal: rr.wt,  srtfVal: srtf.wt  },
+        { label: 'Avg Turnaround Time (TAT)', rrVal: rr.tat, srtfVal: srtf.tat },
+        { label: 'Avg Response Time (RT)',    rrVal: rr.rt,  srtfVal: srtf.rt  },
+    ];
+
+    metrics.forEach(m => {
+        const rrWins   = m.rrVal  < m.srtfVal;
+        const srtfWins = m.srtfVal < m.rrVal;
+        const tie      = m.rrVal === m.srtfVal;
+        const winner   = tie ? 'Tie' : (rrWins ? 'Round Robin' : 'SRTF');
+        body.innerHTML += `
+            <tr>
+                <td style="text-align:left; font-weight:bold;">${m.label}</td>
+                <td style="color:${rrWins ? 'var(--success-color)' : 'inherit'}">${m.rrVal.toFixed(2)}</td>
+                <td style="color:${srtfWins ? 'var(--success-color)' : 'inherit'}">${m.srtfVal.toFixed(2)}</td>
+                <td style="font-weight:bold;">${winner}</td>
+            </tr>`;
+    });
+}
+
+function renderConclusion(rrList, srtfList, quantum) {
+    const rr   = calcAvgs(rrList);
+    const srtf = calcAvgs(srtfList);
+    const box  = document.getElementById('conclusion-text');
+    box.innerHTML = '';
+
+    const betterWT  = rr.wt  < srtf.wt  ? 'Round Robin' : (srtf.wt  < rr.wt  ? 'SRTF' : 'neither (tie)');
+    const betterRT  = rr.rt  < srtf.rt  ? 'Round Robin' : (srtf.rt  < rr.rt  ? 'SRTF' : 'neither (tie)');
+    const betterTAT = rr.tat < srtf.tat ? 'Round Robin' : (srtf.tat < rr.tat ? 'SRTF' : 'neither (tie)');
+
+    const rrMaxWT   = Math.max(...rrList.map(p => p.waitingTime));
+    const rrMinWT   = Math.min(...rrList.map(p => p.waitingTime));
+    const srtfMaxWT = Math.max(...srtfList.map(p => p.waitingTime));
+    const srtfMinWT = Math.min(...srtfList.map(p => p.waitingTime));
+    const rrFairness   = rrMaxWT - rrMinWT;
+    const srtfFairness = srtfMaxWT - srtfMinWT;
+    const fairer = rrFairness <= srtfFairness ? 'Round Robin' : 'SRTF';
+
+    const shortBurst = Math.min(...rrList.map(p => p.burstTime));
+    const rrShort   = rrList.find(p   => p.burstTime === shortBurst);
+    const srtfShort = srtfList.find(p => p.burstTime === shortBurst);
+    const srtfFasterShort = srtfShort && rrShort && srtfShort.turnaroundTime < rrShort.turnaroundTime;
+
+    const rrScore   = (betterWT === 'Round Robin' ? 1:0) + (betterRT === 'Round Robin' ? 1:0) + (betterTAT === 'Round Robin' ? 1:0);
+    const srtfScore = (betterWT === 'SRTF' ? 1:0)       + (betterRT === 'SRTF' ? 1:0)        + (betterTAT === 'SRTF' ? 1:0);
+    const recommended = rrScore > srtfScore ? 'Round Robin' : (srtfScore > rrScore ? 'SRTF' : 'either (they tied overall)');
+    const recommendReason = recommended === 'Round Robin'
+        ? 'it provided better average metrics while ensuring all processes are treated fairly.'
+        : recommended === 'SRTF'
+        ? 'it minimized average waiting and turnaround times, making the CPU more efficient overall.'
+        : 'both algorithms performed equally well across all metrics.';
+
+    const lines = [
+        `<strong>Better average Waiting Time:</strong> ${betterWT} had a lower avg WT (RR: ${rr.wt.toFixed(2)} | SRTF: ${srtf.wt.toFixed(2)}).`,
+        `<strong>Better average Response Time:</strong> ${betterRT} responded first on average (RR: ${rr.rt.toFixed(2)} | SRTF: ${srtf.rt.toFixed(2)}).`,
+        `<strong>Better average Turnaround Time:</strong> ${betterTAT} completed processes faster on average (RR: ${rr.tat.toFixed(2)} | SRTF: ${srtf.tat.toFixed(2)}).`,
+        `<strong>Fairness:</strong> ${fairer} appeared fairer — its waiting time spread was smaller (RR spread: ${rrFairness} | SRTF spread: ${srtfFairness}).`,
+        `<strong>Short-job efficiency:</strong> ${srtfFasterShort ? 'SRTF completed the shortest job faster, confirming its advantage for short tasks.' : 'Round Robin and SRTF were comparable on short-job completion.'}`,
+        `<strong>Effect of quantum (${quantum} units):</strong> ${quantum <= 2 ? 'A small quantum caused more context switches, making RR behave almost like SRTF but with more overhead.' : quantum >= 6 ? 'A large quantum reduced switching but made RR feel less fair — longer waits between turns.' : 'A moderate quantum balanced responsiveness and overhead reasonably well.'}`,
+        `<strong>Recommendation:</strong> For this workload, <strong>${recommended}</strong> is the better choice because ${recommendReason}`,
+    ];
+
+    lines.forEach(text => {
+        const div = document.createElement('div');
+        div.style.cssText = 'padding:0.6rem 0.8rem; border-radius:6px; background:rgba(0,0,0,0.02); border-left: 3px solid var(--primary);';
+        div.innerHTML = text;
+        box.appendChild(div);
+    });
+}
+
+window.onload = () => loadScenario('A');
+</script>
+</body>
+</html>
