@@ -20,9 +20,7 @@ This simulator focuses on the critical balance between **Fairness** and **Effici
 
 | Feature | Round Robin (RR) | SRTF |
 | :--- | :--- | :--- |
-| **Fairness** | 1. Short processes are always favored. <br>
-2. Long processes may suffer from starvation (they keep getting preempted if shorter jobs keep arriving). <br> 
-3. A process might wait indefinitely if shorter jobs keep coming.
+| **Fairness** | 1. Short processes are always favored. <br> 2. Long processes may suffer from starvation (they keep getting preempted if shorter jobs keep arriving). <br> 3. A process might wait indefinitely if shorter jobs keep coming.
  | 1. Every process gets a fixed time slice (quantum q). <br> 
 2. No starvation → all processes get CPU time regularly. <br>
 3. Ensures equal opportunity for all processes. |
