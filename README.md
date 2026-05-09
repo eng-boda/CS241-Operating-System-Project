@@ -20,8 +20,8 @@ This simulator focuses on the critical balance between **Fairness** and **Effici
 
 | Feature | Round Robin (RR) | Shortest Remaining Time First (SRTF) |
 | :--- | :--- | :--- |
-| **Fairness** | 1. Every process gets a fixed time slice (quantum q). <br> 2. **No starvation** → all processes get CPU time regularly. <br> 3. Ensures equal opportunity for all processes. | 1. Short processes are always favored. <br> 2. Long processes may suffer from **starvation** (preempted by shorter arrivals). <br> 3. A process might wait indefinitely if shorter jobs keep coming. |
-| **Efficiency** | 1. Performance depends heavily on time quantum ($q$). <br> 2. Large $q$ → behaves like **FCFS** (Low Overhead). <br> 3. Small $q$ → behaves like **RR** (High Overhead). <br> 4. Does not minimize waiting time. | 1. Minimizes average waiting time and turnaround time. <br> 2. Always runs the process with the least remaining time (Best performance). <br> 3. Overhead due to frequent preemption. |
+| **Fairness** | 1. Every process gets a fixed time slice (quantum q). <br> 2. **No starvation** → all processes get CPU time regularly. <br> 3. Ensures equal opportunity for all processes. | 1. Short processes are always favored. <br> 2. Long processes may suffer from **starvation** (they keep getting preempted if shorter jobs keep arriving). <br> 3. A process might wait indefinitely if shorter jobs keep coming. |
+| **Efficiency** | 1. Performance depends heavily on time quantum ($q$). <br>    - Large $q$ → behaves like **FCFS** (Weak Interactivity and  Low Overhead). <br>       - Small $q$ → behaves like **RR** (Fast Responsive and High Overhead). <br> 2.Higher context switching overhead than SRTF. <br> 3. Does not minimize waiting time. | 1. Minimizes average waiting time and turnaround time. <br> 2. Always runs the process with the least remaining time (Best performance). <br> 3. Overhead due to frequent preemption. |
 
 ### 2️. Effect of Time Slicing versus Shortest-Job Preference
 
