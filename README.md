@@ -26,22 +26,45 @@ This simulator focuses on the critical balance between **Fairness** and **Effici
 ---
 
 ## 🧪 Testing Scenarios & Analysis
-The simulator includes pre-built scenarios to stress-test each algorithm:
+The simulator includes 5 built-in scenarios to demonstrate the core mechanics of each algorithm:
 
-### 🔹 Scenario A: Mixed Workload
-Tests how algorithms handle a typical mix of arrival and burst times.
-- **Result:** SRTF generally wins on average waiting time, while RR maintains a smaller waiting time spread (Fairness).
+### 🔹 Scenario A: Mixed Workload (The Standard Case)
+Testing how algorithms handle a typical workload with varied arrival and burst times.
+* **Data:** P1(0,8), P2(1,4), P3(2,9), P4(3,5) | **Quantum:** 3
+* **Goal:** Observe the basic trade-off where SRTF minimizes waiting time while RR ensures fairness.
+* **Key Outcome:** SRTF generally achieves a lower average waiting time, but RR provides more consistent response times.
 
 ### 🔹 Scenario B: Quantum Sensitivity
-Demonstrates how changing the Time Quantum (q) alters RR behavior.
-- **Small q:** Highly responsive but high context-switching overhead.
-- **Large q:** Low overhead but behaves like First-Come-First-Served (FCFS).
+Demonstrating how the **Time Quantum** size is the primary performance driver for Round Robin.
+* **Data:** Four processes with identical burst times (6 units) arriving at the same time.
+* **Test Case:**
+    * **Small Q=2:** Highly responsive, but increased context-switching overhead.
+    * **Large Q=6:** Lower overhead, but starts behaving like FCFS (First-Come-First-Served).
 
 ### 🔹 Scenario C: Short-Job Heavy
-Shows SRTF’s power in preempting long jobs to clear short tasks instantly.
+Visualizing how **SRTF** takes immediate advantage of short burst times by preempting long-running tasks.
+* **Data:** One long job (10 units) vs. several very short ones (1-2 units).
+* **Result:** SRTF significantly reduces average waiting time by "clearing" short tasks out of the system instantly.
 
-### 🔹 Scenario D: Interactive Fairness
-Proves RR's superiority in interactive systems by guaranteeing a quick first turn for every process.
+### 🔹 Scenario D: Interactive-Style Fairness
+Testing first response time by having all processes arrive simultaneously at $t=0$.
+* **Goal:** Prove why RR is preferred for interactive systems; it guarantees every process gets its first CPU turn within a predictable window.
+
+### 🔹 Scenario E: Robust Validation (The Error Case)
+Testing the simulator's logic and data integrity layer.
+* **Input:** Invalid arrival times (negative values) or zero/invalid quantum sizes.
+* **Result:** The system catches errors through a validation layer, preventing crashes and displaying user-friendly error messages.
+
+---
+
+## 📊 Quick Comparison Summary
+
+| Metric | Round Robin (RR) | SRTF | Winner |
+| :--- | :--- | :--- | :--- |
+| **Avg Waiting Time** | Higher | Lower (Optimized) | 🏆 **SRTF** |
+| **Avg Response Time** | Lower (Fast) | Higher for long jobs | 🏆 **RR** |
+| **Fairness** | High (Equal Slices) | Low (Short-job bias) | 🏆 **RR** |
+| **Starvation Risk** | None | Possible for long jobs | 🏆 **RR** |
 
 ---
 
