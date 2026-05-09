@@ -44,7 +44,7 @@ This simulator focuses on the critical balance between **Fairness** and **Effici
 | :--- | :--- | :--- |
 | **Effect** | Fair and highly responsive but causes high overhead due to frequent context switching. | Efficient with low overhead but less responsive and behaves like FCFS. |
 
-### 5.Whether SRTF gives a strong advantage to short jobs
+### 5. Whether SRTF gives a strong advantage to short jobs
 
 | Feature | SRTF |
 | :--- | :--- |
