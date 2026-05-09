@@ -38,7 +38,8 @@
         
         table { width: 100%; border-collapse: collapse; margin-bottom: 1rem; }
         th, td { padding: 0.75rem; text-align: center; border-bottom: 1px solid var(--border-color); }
-        input[type="number"] { width: 70px; padding: 0.4rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); text-align: center;}
+        input[type="number"], input[type="range"] { padding: 0.4rem; border-radius: 4px; border: 1px solid var(--border-color); background: var(--bg-color); color: var(--text-main); text-align: center;}
+        input[type="number"] { width: 70px; }
         
         .controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; background: rgba(0,0,0,0.02); padding: 1rem; border-radius: 8px;}
         .quantum-group { display: flex; align-items: center; gap: 0.5rem; font-weight: bold; }
@@ -46,35 +47,76 @@
         #error-msg { color: var(--error-color); font-weight: bold; margin-top: 1rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px; display: none; border-left: 4px solid var(--error-color); }
 
         .gantt-chart { 
-    display: flex; 
-    height: 50px; 
-    border: 1px solid var(--border-color); 
-    position: relative; 
-    margin-bottom: 2.5rem;
-    overflow: visible;
-    background: var(--bg-color);
-}
+            display: flex; 
+            height: 50px; 
+            border: 1px solid var(--border-color); 
+            position: relative; 
+            margin-bottom: 2.5rem;
+            overflow: visible;
+            background: var(--bg-color);
+        }
 
-.gantt-block { 
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    font-size: 0.9rem; 
-    font-weight: bold; 
-    border-right: 1px solid rgba(0,0,0,0.3);
-    position: relative; 
-    color: #000; 
-}
+        .gantt-block { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 0.9rem; 
+            font-weight: bold; 
+            border-right: 1px solid rgba(0,0,0,0.3);
+            position: relative; 
+            color: #000; 
+        }
 
-.gantt-time { 
-    position: absolute; 
-    bottom: -24px; 
-    right: 0; 
-    transform: translateX(50%);
-    font-size: 0.85rem; 
-    color: var(--text-main); 
-    font-weight: bold; 
-}
+        .gantt-time { 
+            position: absolute; 
+            bottom: -24px; 
+            right: 0; 
+            transform: translateX(50%);
+            font-size: 0.85rem; 
+            color: var(--text-main); 
+            font-weight: bold; 
+        }
+
+        .gantt-progress-line {
+            position: absolute;
+            top: -8px;
+            bottom: -8px;
+            width: 3px;
+            background: linear-gradient(180deg, #fb7185, #ef4444);
+            left: 0;
+            z-index: 20;
+            box-shadow: 0 0 14px rgba(239, 68, 68, 0.35);
+            pointer-events: none;
+            border-radius: 999px;
+            transform: translateX(0);
+            will-change: transform;
+        }
+
+        .gantt-progress-line::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 18px rgba(239, 68, 68, 0.45);
+        }
+
+        .gantt-progress-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -3px;
+            right: -3px;
+            background: rgba(239, 68, 68, 0.18);
+            filter: blur(4px);
+            border-radius: 999px;
+        }
+
         .queue-timeline { display: flex; gap: 2px; margin-bottom: 2rem;}
         .queue-snapshot { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; background: var(--queue-bg); padding: 4px; border-radius: 4px; border: 1px dashed var(--border-color); }
         .queue-item { padding: 2px 0; border-radius: 3px; font-size: 0.7rem; font-weight: bold; text-align: center; border: 1px solid rgba(0,0,0,0.1); color: #000;}
@@ -95,6 +137,171 @@
         .scenarios-group button.scenario-e.active {
             background: var(--error-color) !important;
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+        }
+
+        .anim-controls {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            background: rgba(79, 70, 229, 0.05);
+        }
+
+        .time-badge {
+            padding: 0.45rem 0.85rem;
+            border-radius: 999px;
+            background: var(--primary);
+            color: white;
+            font-weight: bold;
+            min-width: 110px;
+            text-align: center;
+            box-shadow: 0 6px 20px rgba(79,70,229,0.25);
+        }
+
+        .speed-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: bold;
+        }
+
+        .dual-stage {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .sim-box {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.02));
+            min-height: 320px;
+        }
+
+        .sim-box h4 {
+            margin-bottom: 0.85rem;
+            color: var(--primary);
+        }
+
+        .algo-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.9rem;
+        }
+
+        .lane-title {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-weight: bold;
+            margin-bottom: 0.4rem;
+        }
+
+        .lane {
+            border: 1px dashed var(--border-color);
+            border-radius: 12px;
+            padding: 0.85rem;
+            min-height: 72px;
+            background: rgba(0,0,0,0.02);
+        }
+
+        .lane-flex {
+            display: flex;
+            gap: 0.55rem;
+            flex-wrap: wrap;
+            align-content: flex-start;
+        }
+
+        .cpu-core {
+            min-height: 110px;
+            border: 2px dashed var(--border-color);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: rgba(0,0,0,0.03);
+            overflow: hidden;
+        }
+
+        .cpu-core::before {
+            content: 'CPU';
+            position: absolute;
+            top: 8px;
+            left: 12px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .proc-chip {
+            min-width: 66px;
+            padding: 0.65rem 0.8rem;
+            border-radius: 12px;
+            font-weight: 800;
+            text-align: center;
+            color: #000;
+            position: relative;
+            border: 1px solid rgba(0,0,0,0.08);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: transform 0.22s ease, box-shadow 0.22s ease, opacity 0.22s ease, filter 0.22s ease;
+        }
+
+        .proc-chip small {
+            display: block;
+            font-size: 0.7rem;
+            margin-top: 0.2rem;
+            font-weight: 700;
+            opacity: 0.85;
+        }
+
+        .proc-chip.ready {
+            transform: translateY(-1px);
+            box-shadow: 0 0 0 2px rgba(245,158,11,0.18), 0 8px 18px rgba(245,158,11,0.12);
+        }
+
+        .proc-chip.running {
+            transform: scale(1.04);
+            box-shadow: 0 0 0 3px rgba(34,197,94,0.22), 0 0 20px rgba(34,197,94,0.22);
+        }
+
+        .proc-chip.finished {
+            opacity: 0.88;
+            box-shadow: 0 0 0 2px rgba(6,182,212,0.18), 0 8px 18px rgba(6,182,212,0.15);
+            filter: saturate(0.88);
+        }
+
+        .status-line {
+            margin-top: 0.75rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.8;
+        }
+
+        .legend-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.7rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .legend-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
         }
     </style>
 </head>
@@ -133,8 +340,80 @@
     </div>
 
     <div id="simulation-wrapper" style="display: none; display: flex; flex-direction: column; gap: 1.5rem;">
+
         <div class="card">
-            <h2>2. Gantt Charts & Ready Queue</h2>
+            <h2>2. Live Animation Playback</h2>
+
+            <div class="anim-controls">
+                <button onclick="startPlayback()">▶ Play</button>
+                <button class="secondary" onclick="pausePlayback()">⏸ Pause</button>
+                <button class="secondary" onclick="resetPlayback()">⟲ Reset</button>
+                <button class="secondary" onclick="stepForward()">+1 sec</button>
+
+                <div class="time-badge" id="live-time-badge">Time: 0.0</div>
+
+                <div class="speed-label">Speed</div>
+                <input type="range" id="speed-control" min="0.25" max="3" step="0.25" value="1" oninput="updateSpeedLabel()">
+                <span id="speed-value" class="speed-label">1x</span>
+            </div>
+
+            <div class="dual-stage">
+                <div class="sim-box">
+                    <h4>Round Robin Live</h4>
+                    <div class="algo-grid">
+                        <div>
+                            <div class="lane-title">Not Arrived</div>
+                            <div class="lane"><div class="lane-flex" id="rr-not-arrived"></div></div>
+                        </div>
+                        <div>
+                            <div class="lane-title">CPU</div>
+                            <div class="cpu-core" id="rr-cpu-live"></div>
+                        </div>
+                        <div>
+                            <div class="lane-title">Ready Queue</div>
+                            <div class="lane"><div class="lane-flex" id="rr-ready-live"></div></div>
+                        </div>
+                        <div>
+                            <div class="lane-title">Finished</div>
+                            <div class="lane"><div class="lane-flex" id="rr-finished-live"></div></div>
+                        </div>
+                    </div>
+                    <div class="status-line" id="rr-live-status"></div>
+                </div>
+
+                <div class="sim-box">
+                    <h4>SRTF Live</h4>
+                    <div class="algo-grid">
+                        <div>
+                            <div class="lane-title">Not Arrived</div>
+                            <div class="lane"><div class="lane-flex" id="srtf-not-arrived"></div></div>
+                        </div>
+                        <div>
+                            <div class="lane-title">CPU</div>
+                            <div class="cpu-core" id="srtf-cpu-live"></div>
+                        </div>
+                        <div>
+                            <div class="lane-title">Ready Set / Waiting</div>
+                            <div class="lane"><div class="lane-flex" id="srtf-ready-live"></div></div>
+                        </div>
+                        <div>
+                            <div class="lane-title">Finished</div>
+                            <div class="lane"><div class="lane-flex" id="srtf-finished-live"></div></div>
+                        </div>
+                    </div>
+                    <div class="status-line" id="srtf-live-status"></div>
+                </div>
+            </div>
+
+            <div class="legend-row">
+                <span class="legend-pill"><span class="legend-dot" style="background:#f59e0b;"></span>Ready / Waiting</span>
+                <span class="legend-pill"><span class="legend-dot" style="background:#22c55e;"></span>Running</span>
+                <span class="legend-pill"><span class="legend-dot" style="background:#06b6d4;"></span>Finished</span>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>3. Gantt Charts & Ready Queue</h2>
             <h4 style="margin-bottom: 10px;">Round Robin (RR) - Gantt Chart</h4>
             <div id="gantt-rr" class="gantt-chart"></div>
             <h4 style="margin-bottom: 10px; color: var(--primary);">Ready Queue View for Round Robin</h4>
@@ -144,7 +423,7 @@
         </div>
 
         <div class="card">
-            <h2>3. Results Tables</h2>
+            <h2>4. Results Tables</h2>
             <div class="results-grid">
                 <div>
                     <h4>Round Robin Metrics</h4>
@@ -158,7 +437,7 @@
         </div>
 
         <div class="card">
-            <h2>4. Comparison Summary</h2>
+            <h2>5. Comparison Summary</h2>
             <p style="color:var(--text-muted); margin-bottom:1rem; font-size:0.9rem;">Side-by-side winner per metric. Lower value wins.</p>
             <table id="comparison-table">
                 <thead><tr><th>Metric</th><th>Round Robin (avg)</th><th>SRTF (avg)</th><th>Winner</th></tr></thead>
@@ -167,7 +446,7 @@
         </div>
 
         <div class="card">
-            <h2>5. Final Conclusion</h2>
+            <h2>6. Final Conclusion</h2>
             <div id="conclusion-text" style="line-height:1.9; font-size:0.95rem; display:flex; flex-direction:column; gap:0.75rem;"></div>
         </div>
     </div>
@@ -326,6 +605,18 @@ class SRTF {
 }
 
 let pCount = 0;
+
+let playbackTimer = null;
+let playbackStartTs = null;
+let pausedAt = 0;
+let playbackTotal = 0;
+let playbackSpeed = 1;
+
+let rawPlaybackProcesses = [];
+let rrPlaybackGantt = [];
+let rrPlaybackSnapshots = [];
+let srtfPlaybackGantt = [];
+
 function addProc(at=0, bt=5) {
     pCount++;
     const tr = document.createElement('tr');
@@ -385,14 +676,26 @@ function runSimulation() {
     const srtfGantt = extractGanttData(srtfProcessList);
     const totalTime = Math.max(...rrGantt.map(g => g.end), ...srtfGantt.map(g => g.end));
 
-    renderGantt('gantt-rr', rrGantt, totalTime);
+    renderGantt('gantt-rr', rrGantt, totalTime, true);
     renderQueue('queue-timeline-rr', rr.snapshots, totalTime);
-    renderGantt('gantt-srtf', srtfGantt, totalTime);
+    renderGantt('gantt-srtf', srtfGantt, totalTime, true);
     
     fillTable('res-rr', rrProcessList, true);
     fillTable('res-srtf', srtfProcessList, false);
     renderComparison(rrProcessList, srtfProcessList);
     renderConclusion(rrProcessList, srtfProcessList, q);
+
+    rawPlaybackProcesses = rawProcs.map(p => ({...p}));
+    rrPlaybackGantt = rrGantt.map(g => ({...g}));
+    rrPlaybackSnapshots = rr.snapshots.map(s => ({
+        start: s.start,
+        end: s.end,
+        queueState: (s.queueState || []).map(x => ({...x}))
+    }));
+    srtfPlaybackGantt = srtfGantt.map(g => ({...g}));
+
+    playbackTotal = totalTime;
+    resetPlayback();
 }
 
 function extractGanttData(processList) {
@@ -405,11 +708,17 @@ function extractGanttData(processList) {
     return data.sort((a,b) => a.start - b.start);
 }
 
-function renderGantt(id, gantt, total) {
+function renderGantt(id, gantt, total, withProgress = false) {
     const el = document.getElementById(id); 
-    
     el.innerHTML = '<div style="position:absolute; bottom:-24px; left:0; transform:translateX(-50%); font-size:0.85rem; font-weight:bold; color:var(--text-main); z-index:10;">0</div>';
     
+    if(withProgress) {
+        const line = document.createElement('div');
+        line.className = 'gantt-progress-line';
+        line.id = `${id}-progress`;
+        el.appendChild(line);
+    }
+
     gantt.forEach(b => {
         const div = document.createElement('div');
         div.className = `gantt-block ${b.color}`;
@@ -534,9 +843,171 @@ function renderConclusion(rrList, srtfList, quantum) {
     });
 }
 
+function updateSpeedLabel() {
+    playbackSpeed = parseFloat(document.getElementById('speed-control').value);
+    document.getElementById('speed-value').innerText = `${playbackSpeed}x`;
+}
+
+function startPlayback() {
+    if (!rawPlaybackProcesses.length || playbackTimer) return;
+    playbackStartTs = performance.now() - (pausedAt * 1000 / playbackSpeed);
+    playbackTimer = requestAnimationFrame(playbackLoop);
+}
+
+function playbackLoop(ts) {
+    const elapsedMs = ts - playbackStartTs;
+    const currentTime = Math.min(playbackTotal, (elapsedMs / 1000) * playbackSpeed);
+    pausedAt = currentTime;
+
+    renderLivePlayback(currentTime);
+    updateGanttProgress('gantt-rr', 'gantt-rr-progress', currentTime, playbackTotal);
+    updateGanttProgress('gantt-srtf', 'gantt-srtf-progress', currentTime, playbackTotal);
+
+    if (currentTime < playbackTotal) {
+        playbackTimer = requestAnimationFrame(playbackLoop);
+    } else {
+        pausePlayback();
+    }
+}
+
+function pausePlayback() {
+    if (playbackTimer) cancelAnimationFrame(playbackTimer);
+    playbackTimer = null;
+}
+
+function resetPlayback() {
+    pausePlayback();
+    pausedAt = 0;
+    renderLivePlayback(0);
+    updateGanttProgress('gantt-rr', 'gantt-rr-progress', 0, playbackTotal || 1);
+    updateGanttProgress('gantt-srtf', 'gantt-srtf-progress', 0, playbackTotal || 1);
+}
+
+function stepForward() {
+    pausePlayback();
+    pausedAt = Math.min(playbackTotal, pausedAt + 1);
+    renderLivePlayback(pausedAt);
+    updateGanttProgress('gantt-rr', 'gantt-rr-progress', pausedAt, playbackTotal);
+    updateGanttProgress('gantt-srtf', 'gantt-srtf-progress', pausedAt, playbackTotal);
+}
+
+function getCurrentSlice(gantt, time) {
+    return gantt.find(s => time >= s.start && time < s.end) || null;
+}
+
+function getExecutedTimeForProcess(gantt, pid, time) {
+    return gantt
+        .filter(s => s.id === pid && s.start < time)
+        .reduce((sum, s) => sum + Math.max(0, Math.min(time, s.end) - s.start), 0);
+}
+
+function buildChipHTML(p, remaining, stateClass='') {
+    return `<div class="proc-chip ${p.color} ${stateClass}">
+        ${p.id}<small>Rem: ${remaining.toFixed(2).replace('.00','')}</small>
+    </div>`;
+}
+
+function renderRRLive(time) {
+    const notArrivedEl = document.getElementById('rr-not-arrived');
+    const cpuEl = document.getElementById('rr-cpu-live');
+    const readyEl = document.getElementById('rr-ready-live');
+    const finishedEl = document.getElementById('rr-finished-live');
+    const statusEl = document.getElementById('rr-live-status');
+
+    const currentSlice = getCurrentSlice(rrPlaybackGantt, time);
+    const runningId = currentSlice ? currentSlice.id : null;
+    const activeSnapshot = rrPlaybackSnapshots.find(s => time >= s.start && time < s.end) || null;
+    const queueIds = activeSnapshot ? activeSnapshot.queueState.map(q => q.id) : [];
+
+    let notArrivedHTML = '';
+    let cpuHTML = '';
+    let readyHTML = '';
+    let finishedHTML = '';
+
+    rawPlaybackProcesses.forEach(p => {
+        const executed = getExecutedTimeForProcess(rrPlaybackGantt, p.id, time);
+        const remaining = Math.max(0, p.bt - executed);
+        const hasArrived = p.at <= time;
+        const done = remaining <= 0.0001;
+
+        if (!hasArrived) notArrivedHTML += buildChipHTML(p, p.bt);
+        else if (done) finishedHTML += buildChipHTML(p, 0, 'finished');
+        else if (runningId === p.id) cpuHTML += buildChipHTML(p, remaining, 'running');
+        else readyHTML += buildChipHTML(p, remaining, 'ready');
+    });
+
+    notArrivedEl.innerHTML = notArrivedHTML;
+    cpuEl.innerHTML = cpuHTML || `<div style="color:var(--text-muted);font-weight:bold;">Idle</div>`;
+    readyEl.innerHTML = readyHTML;
+    finishedEl.innerHTML = finishedHTML;
+
+    statusEl.innerHTML = runningId
+        ? `<strong>Running Now :</strong> ${runningId} &nbsp;|&nbsp; <strong>Queue:</strong> ${queueIds.length ? queueIds.join(' → ') : 'Empty'}`
+        : `<strong>CPU State:</strong> Idle &nbsp;|&nbsp; <strong>Queue:</strong> ${queueIds.length ? queueIds.join(' → ') : 'Empty'}`;
+}
+
+function renderSRTFLive(time) {
+    const notArrivedEl = document.getElementById('srtf-not-arrived');
+    const cpuEl = document.getElementById('srtf-cpu-live');
+    const readyEl = document.getElementById('srtf-ready-live');
+    const finishedEl = document.getElementById('srtf-finished-live');
+    const statusEl = document.getElementById('srtf-live-status');
+
+    const currentSlice = getCurrentSlice(srtfPlaybackGantt, time);
+    const runningId = currentSlice ? currentSlice.id : null;
+
+    let waiting = [];
+    let notArrivedHTML = '';
+    let cpuHTML = '';
+    let readyHTML = '';
+    let finishedHTML = '';
+
+    rawPlaybackProcesses.forEach(p => {
+        const executed = getExecutedTimeForProcess(srtfPlaybackGantt, p.id, time);
+        const remaining = Math.max(0, p.bt - executed);
+        const hasArrived = p.at <= time;
+        const done = remaining <= 0.0001;
+
+        if (!hasArrived) notArrivedHTML += buildChipHTML(p, p.bt);
+        else if (done) finishedHTML += buildChipHTML(p, 0, 'finished');
+        else if (runningId === p.id) cpuHTML += buildChipHTML(p, remaining, 'running');
+        else waiting.push({ ...p, remaining });
+    });
+
+    waiting
+        .sort((a, b) => a.remaining - b.remaining || a.at - b.at || a.id.localeCompare(b.id))
+        .forEach(p => readyHTML += buildChipHTML(p, p.remaining, 'ready'));
+
+    notArrivedEl.innerHTML = notArrivedHTML;
+    cpuEl.innerHTML = cpuHTML || `<div style="color:var(--text-muted);font-weight:bold;">Idle</div>`;
+    readyEl.innerHTML = readyHTML;
+    finishedEl.innerHTML = finishedHTML;
+
+    statusEl.innerHTML = runningId
+        ? `<strong>Running Now :</strong> ${runningId} &nbsp;|&nbsp; <strong>Waiting Set:</strong> ${waiting.length ? waiting.map(p => `${p.id}(${p.remaining.toFixed(1)})`).join(' → ') : 'Empty'}`
+        : `<strong>CPU State:</strong> Idle &nbsp;|&nbsp; <strong>Waiting Set:</strong> ${waiting.length ? waiting.map(p => `${p.id}(${p.remaining.toFixed(1)})`).join(' → ') : 'Empty'}`;
+}
+
+function renderLivePlayback(time) {
+    document.getElementById('live-time-badge').innerText = `Time: ${time.toFixed(1)}`;
+    renderRRLive(time);
+    renderSRTFLive(time);
+}
+
+function updateGanttProgress(chartId, lineId, time, total) {
+    const chart = document.getElementById(chartId);
+    const line = document.getElementById(lineId);
+    if (!chart || !line || total <= 0) return;
+
+    const chartWidth = chart.clientWidth;
+    const x = (time / total) * chartWidth;
+    line.style.transform = `translateX(${x}px)`;
+}
+
 window.onload = () => {
     const firstBtn = document.querySelector('.btn-scenario');
     loadScenario('A', firstBtn);
+    updateSpeedLabel();
 };
 </script>
 </body>
