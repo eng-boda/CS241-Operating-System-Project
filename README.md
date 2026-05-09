@@ -1,6 +1,22 @@
 <div align="center">
-# CS241-Operating-System-Project
-# 🚀 CPU Scheduling Simulator: RR vs. SRTF
+
+# 🚀 CPU Scheduling Simulator
+### 📂 CS241 - Operating System Project
+
+**A comprehensive tool to visualize, compare, and analyze CPU Scheduling Algorithms.**
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Maintained%3F-yes-green.svg?style=for-the-badge" alt="Maintained">
+  <img src="https://img.shields.io/badge/Language-PHP-blue.svg?style=for-the-badge" alt="PHP">
+  <img src="https://img.shields.io/badge/Frontend-Bootstrap-purple.svg?style=for-the-badge" alt="Bootstrap">
+</p>
+
+<img src="images/scenario_a_results.png" width="85%" alt="Simulator Screenshot">
+
+---
+
+*“Fairness vs. Efficiency: Round Robin ensures everyone gets a turn, while SRTF aims for the fastest finish.”* [cite: 3, 6, 60]
+
 </div>
 Welcome to the **CPU Scheduling Simulator**! This project is a powerful tool designed to visualize, compare, and analyze two of the most popular CPU scheduling algorithms: **Round Robin (RR)** and **Shortest Remaining Time First (SRTF)**.
 
