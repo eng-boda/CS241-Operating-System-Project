@@ -58,6 +58,18 @@
         .color-0 { background-color: var(--p1); } .color-1 { background-color: var(--p2); }
         .color-2 { background-color: var(--p3); } .color-3 { background-color: var(--p4); }
         .color-4 { background-color: var(--p5); } .color-5 { background-color: var(--p6); }
+        
+        .scenarios-group button.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+            border-color: var(--primary);
+        }
+
+        .scenarios-group button.scenario-e.active {
+            background: var(--error-color) !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -71,11 +83,11 @@
     <div class="card" id="input-panel">
         <h2>1. Input Panel (Process Data)</h2>
         <div class="scenarios-group">
-            <button class="secondary" onclick="loadScenario('A')">Scenario A (Mixed)</button>
-            <button class="secondary" onclick="loadScenario('B')">Scenario B (Quantum Sensitivity)</button>
-            <button class="secondary" onclick="loadScenario('C')">Scenario C (Short-Job Heavy)</button>
-            <button class="secondary" onclick="loadScenario('D')">Scenario D (Fairness / First Response)</button>
-            <button class="danger" onclick="loadScenario('E')">Scenario E (Invalid Check)</button>
+            <button class="secondary btn-scenario" onclick="loadScenario('A', this)">Scenario A (Mixed)</button>
+            <button class="secondary btn-scenario" onclick="loadScenario('B', this)">Scenario B (Quantum Sensitivity)</button>
+            <button class="secondary btn-scenario" onclick="loadScenario('C', this)">Scenario C (Short-Job Heavy)</button>
+            <button class="secondary btn-scenario" onclick="loadScenario('D', this)">Scenario D (Fairness / First Response)</button>
+            <button class="secondary btn-scenario scenario-e" onclick="loadScenario('E', this)">Scenario E (Invalid Check)</button>
         </div>
         
         <table>
@@ -298,7 +310,12 @@ function addProc(at=0, bt=5) {
     document.getElementById('proc-body').appendChild(tr);
 }
 
-function loadScenario(type) {
+function loadScenario(type, btn) {
+    if (btn) {
+        document.querySelectorAll('.btn-scenario').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
     document.getElementById('proc-body').innerHTML = ''; pCount = 0;
     if(type === 'A') { [ [0,8],[1,4],[2,9],[3,5] ].forEach(p => addProc(p[0],p[1])); document.getElementById('quantum').value=3; }
     else if(type === 'B') { [ [0,6],[0,6],[0,6],[0,6] ].forEach(p => addProc(p[0],p[1])); document.getElementById('quantum').value=2; }
@@ -488,7 +505,10 @@ function renderConclusion(rrList, srtfList, quantum) {
     });
 }
 
-window.onload = () => loadScenario('A');
+window.onload = () => {
+    const firstBtn = document.querySelector('.btn-scenario');
+    loadScenario('A', firstBtn);
+};
 </script>
 </body>
 </html>
