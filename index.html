@@ -45,10 +45,36 @@
         
         #error-msg { color: var(--error-color); font-weight: bold; margin-top: 1rem; padding: 0.5rem; background: rgba(239, 68, 68, 0.1); border-radius: 6px; display: none; border-left: 4px solid var(--error-color); }
 
-        .gantt-chart { display: flex; height: 50px; border: 1px solid var(--border-color); border-radius: 6px; position: relative; margin-bottom: 2rem; overflow: hidden; background: var(--bg-color);}
-        .gantt-block { display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: bold; border-right: 1px solid rgba(0,0,0,0.1); position: relative; color: #000; }
-        .gantt-time { position: absolute; bottom: -22px; right: -5px; font-size: 0.75rem; color: var(--text-muted); }
+        .gantt-chart { 
+    display: flex; 
+    height: 50px; 
+    border: 1px solid var(--border-color); 
+    position: relative; 
+    margin-bottom: 2.5rem;
+    overflow: visible;
+    background: var(--bg-color);
+}
 
+.gantt-block { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 0.9rem; 
+    font-weight: bold; 
+    border-right: 1px solid rgba(0,0,0,0.3);
+    position: relative; 
+    color: #000; 
+}
+
+.gantt-time { 
+    position: absolute; 
+    bottom: -24px; 
+    right: 0; 
+    transform: translateX(50%);
+    font-size: 0.85rem; 
+    color: var(--text-main); 
+    font-weight: bold; 
+}
         .queue-timeline { display: flex; gap: 2px; margin-bottom: 2rem;}
         .queue-snapshot { flex-grow: 1; display: flex; flex-direction: column; gap: 2px; background: var(--queue-bg); padding: 4px; border-radius: 4px; border: 1px dashed var(--border-color); }
         .queue-item { padding: 2px 0; border-radius: 3px; font-size: 0.7rem; font-weight: bold; text-align: center; border: 1px solid rgba(0,0,0,0.1); color: #000;}
@@ -380,7 +406,10 @@ function extractGanttData(processList) {
 }
 
 function renderGantt(id, gantt, total) {
-    const el = document.getElementById(id); el.innerHTML = '<div style="position:absolute; bottom:-22px; left:0; font-size:0.75rem; color:var(--text-muted);">0</div>';
+    const el = document.getElementById(id); 
+    
+    el.innerHTML = '<div style="position:absolute; bottom:-24px; left:0; transform:translateX(-50%); font-size:0.85rem; font-weight:bold; color:var(--text-main); z-index:10;">0</div>';
+    
     gantt.forEach(b => {
         const div = document.createElement('div');
         div.className = `gantt-block ${b.color}`;
