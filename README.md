@@ -4,7 +4,6 @@
 ## 📂 CS241 - Operating System Project
 
 </div>
-Welcome to the **CPU Scheduling Simulator**! This project is a powerful tool designed to visualize, compare, and analyze two of the most popular CPU scheduling algorithms: **Round Robin (RR)** and **Shortest Remaining Time First (SRTF)**.
 
 ## 📌 Project Overview
 This simulator focuses on the critical balance between **Fairness** and **Efficiency**. It provides a side-by-side comparison using interactive Gantt charts, ready queue states, and detailed performance metrics.
